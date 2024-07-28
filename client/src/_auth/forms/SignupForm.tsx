@@ -1,23 +1,31 @@
-
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/shared/Loader";
 import { useToast } from "@/components/ui/use-toast";
 
-import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 import { SignupValidation } from "@/lib/validation";
-import { useUserContext } from "@/context/AuthContext";
+import { useSelector } from "react-redux";
+import { createUserAccount, signInAccount, getCurrentUser } from "@/store/api";
+import { selectAuth, useAppDispatch } from "@/store/store";
 
 const SignupForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const dispatch = useAppDispatch();
+  const { loading } = useSelector(selectAuth);
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -29,47 +37,40 @@ const SignupForm = () => {
     },
   });
 
-  // Queries
-  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } = useCreateUserAccount();
-  const { mutateAsync: signInAccount, isPending: isSigningInUser } = useSignInAccount();
-
-  // Handler
   const handleSignup = async (user: z.infer<typeof SignupValidation>) => {
     try {
-      const newUser = await createUserAccount(user);
+      const newUserData = {
+        id: "placeholder",
+        ...user
+      }
+      const newUser = await dispatch(createUserAccount(newUserData)).unwrap();
 
       if (!newUser) {
-        toast({ title: "Sign up failed. Please try again.", });
-        
+        toast({ title: "Sign up failed. Please try again." });
         return;
       }
 
-      const session = await signInAccount({
-        email: user.email,
-        password: user.password,
-      });
+      const session = await dispatch(
+        signInAccount({ email: user.email, password: user.password })
+      ).unwrap();
 
       if (!session) {
-        toast({ title: "Something went wrong. Please login your new account", });
-        
+        toast({ title: "Something went wrong. Please login your new account" });
         navigate("/sign-in");
-        
         return;
       }
 
-      const isLoggedIn = await checkAuthUser();
+      const isLoggedIn = await dispatch(getCurrentUser()).unwrap();
 
       if (isLoggedIn) {
         form.reset();
-
         navigate("/");
       } else {
-        toast({ title: "Login failed. Please try again.", });
-        
-        return;
+        toast({ title: "Login failed. Please try again." });
       }
     } catch (error) {
       console.log({ error });
+      toast({ title: "An error occurred. Please try again." });
     }
   };
 
@@ -87,7 +88,8 @@ const SignupForm = () => {
 
         <form
           onSubmit={form.handleSubmit(handleSignup)}
-          className="flex flex-col gap-5 w-full mt-4">
+          className="flex flex-col gap-5 w-full mt-4"
+        >
           <FormField
             control={form.control}
             name="name"
@@ -145,7 +147,7 @@ const SignupForm = () => {
           />
 
           <Button type="submit" className="shad-button_primary">
-            {isCreatingAccount || isSigningInUser || isUserLoading ? (
+            {loading ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>
@@ -158,7 +160,8 @@ const SignupForm = () => {
             Already have an account?
             <Link
               to="/sign-in"
-              className="text-primary-500 text-small-semibold ml-1">
+              className="text-primary-500 text-small-semibold ml-1"
+            >
               Log in
             </Link>
           </p>

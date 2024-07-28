@@ -1,23 +1,32 @@
-
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/shared/Loader";
 import { useToast } from "@/components/ui/use-toast";
 
-import { useSignInAccount } from "@/lib/react-query/queriesAndMutations";
 import { SigninValidation } from "@/lib/validation";
-import { useUserContext } from "@/context/AuthContext";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { signInAccount, getCurrentUser } from "@/store/api";
+import { selectAuth, useAppDispatch } from "@/store/store";
 
 const SigninForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const dispatch = useAppDispatch();
+  const { loading } = useSelector(selectAuth);
 
   const form = useForm<z.infer<typeof SigninValidation>>({
     resolver: zodResolver(SigninValidation),
@@ -27,41 +36,42 @@ const SigninForm = () => {
     },
   });
 
-  // Queries
-  const { mutateAsync: signInAccount, isPending: isSigningInUser } = useSignInAccount();
-
-  // Handler
   const handleSignup = async (user: z.infer<typeof SigninValidation>) => {
     try {
-
-      const session = await signInAccount({
-        email: user.email,
-        password: user.password,
-      });
+      const session = await dispatch(signInAccount(user)).unwrap();
 
       if (!session) {
-        toast({ title: "Something went wrong. Please login your new account", });
-        
+        toast({ title: "Something went wrong. Please login your new account" });
         navigate("/sign-in");
-        
         return;
       }
 
-      const isLoggedIn = await checkAuthUser();
+      const isLoggedIn = await dispatch(getCurrentUser()).unwrap();
 
       if (isLoggedIn) {
         form.reset();
-
         navigate("/");
       } else {
-        toast({ title: "Login failed. Please try again.", });
-        
-        return;
+        toast({ title: "Login failed. Please try again." });
       }
     } catch (error) {
       console.log({ error });
+      toast({ title: "Login failed. Please try again." });
     }
   };
+
+  useEffect(() => {
+    const cookieFallback = localStorage.getItem("cookieFallback");
+    if (
+      cookieFallback === "[]" ||
+      cookieFallback === null ||
+      cookieFallback === undefined
+    ) {
+      navigate("/sign-in");
+    } else {
+      dispatch(getCurrentUser());
+    }
+  }, [dispatch, navigate]);
 
   return (
     <Form {...form}>
@@ -77,8 +87,8 @@ const SigninForm = () => {
 
         <form
           onSubmit={form.handleSubmit(handleSignup)}
-          className="flex flex-col gap-5 w-full mt-4">
-
+          className="flex flex-col gap-5 w-full mt-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -108,7 +118,7 @@ const SigninForm = () => {
           />
 
           <Button type="submit" className="shad-button_primary">
-            {isSigningInUser || isUserLoading ? (
+            {loading ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>
@@ -121,7 +131,8 @@ const SigninForm = () => {
             Don't have an account?
             <Link
               to="/sign-up"
-              className="text-primary-500 text-small-semibold ml-1">
+              className="text-primary-500 text-small-semibold ml-1"
+            >
               Sign up
             </Link>
           </p>
