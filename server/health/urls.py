@@ -20,13 +20,13 @@ from health import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path('habits/', views.habit_list),
-    path('habits/<int:id>', views.habit_detail),
-    path('one-habits/', views.one_habit_list),
-    path('one-habits/<int:id>', views.one_habit_detail),
-    path('users/', views.user_list),
-    path('users/<int:id>', views.user_detail),
+    path("api/admin/", admin.site.urls),
+    path('api/habits/', views.habit_list),
+    path('api/habits/<int:id>', views.habit_detail),
+    path('api/one-habits/', views.one_habit_list),
+    path('api/one-habits/<int:id>', views.one_habit_detail),
+    path('api/users/', views.user_list),
+    path('api/users/<int:id>', views.user_detail),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
