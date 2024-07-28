@@ -5,7 +5,7 @@ import SigninForm from './_auth/forms/SigninForm';
 import SignupForm from './_auth/forms/SignupForm';
 import AuthLayout from './_auth/AuthLayout';
 import { Toaster } from "@/components/ui/toaster"
-import Landing from './_landing/Landing';
+import Landing from './landing/Landing';
 
 
 export const App = () => {

@@ -1,7 +1,6 @@
-// src/features/auth/authSlice.js
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserState } from './interfaces';
-import { createUserAccount, getCurrentUser, getUserByUsername, signInAccount, signOutAccount, updateUserAccount } from './api';
+import { createUserAccount, getCurrentUser, signInAccount, signOutAccount } from './api';
 import { IUser } from '@/types';
 
 const initialState = {
@@ -24,8 +23,9 @@ const authSlice = createSlice({
     setError(state, action) {
       state.error = action.payload;
     },
-    setIsAuthenticated(state, action) {
-      state.isAuthenticated = action.payload;
+    logOut(state) {
+      state.currentUser = null;
+      state.isAuthenticated = false;
     },
   },
   extraReducers: (builder) => {
@@ -37,32 +37,9 @@ const authSlice = createSlice({
       .addCase(createUserAccount.fulfilled, (state, action: PayloadAction<IUser>) => {
         state.loading = false;
         state.currentUser = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(createUserAccount.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "";
-      })
-      .addCase(getUserByUsername.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
-      .addCase(getUserByUsername.fulfilled, (state, action) => {
-        state.loading = false;
-        state.currentUser = action.payload
-      })
-      .addCase(getUserByUsername.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message ?? "";
-      })
-      .addCase(updateUserAccount.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
-      .addCase(updateUserAccount.fulfilled, (state, action) => {
-        state.loading = false;
-        state.currentUser = action.payload;
-      })
-      .addCase(updateUserAccount.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "";
       })
@@ -73,6 +50,7 @@ const authSlice = createSlice({
       .addCase(signInAccount.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(signInAccount.rejected, (state, action) => {
         state.loading = false;
@@ -85,6 +63,7 @@ const authSlice = createSlice({
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.loading = false;
         state.currentUser = action.payload;
+        state.isAuthenticated = true;
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
@@ -106,6 +85,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCurrentUser, setLoading, setError } = authSlice.actions;
+export const { setCurrentUser, setLoading, setError, logOut } = authSlice.actions;
 
 export default authSlice.reducer;

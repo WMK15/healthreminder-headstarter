@@ -1,9 +1,8 @@
-// src/pages/LandingPage.js
+import CTA from '@/components/landing/CTA';
+import Features from '@/components/landing/Features';
+import Footer from '@/components/landing/Footer';
 import Header from '@/components/landing/Header';
 import Hero from '@/components/landing/Hero';
-import Features from '@/components/landing/Features';
-import CTA from '@/components/landing/CTA';
-import Footer from '@/components/landing/Footer';
 
 const LandingPage = () => {
     return (
