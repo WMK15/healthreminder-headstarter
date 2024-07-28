@@ -25,6 +25,8 @@ urlpatterns = [
     path('habits/<int:id>', views.habit_detail),
     path('one-habits/', views.one_habit_list),
     path('one-habits/<int:id>', views.one_habit_detail),
+    path('users/', views.user_list),
+    path('users/<int:id>', views.user_detail),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
