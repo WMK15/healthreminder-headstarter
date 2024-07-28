@@ -1,6 +1,6 @@
 // src/components/ui/Waitlist.tsx
 import React, { useState } from 'react';
-import { db } from '../../firebase';
+import { db } from '@/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

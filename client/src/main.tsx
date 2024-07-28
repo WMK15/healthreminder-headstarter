@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 
 import 'animate.css';
+import "firebase/firestore";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>

@@ -5,6 +5,7 @@ import Header from '@/components/landing/Header';
 import Hero from '@/components/landing/Hero';
 
 const LandingPage = () => {
+    console.log(import.meta.env.VITE_FIREBASE_API_KEY)
     return (
         <div>
             <Header />

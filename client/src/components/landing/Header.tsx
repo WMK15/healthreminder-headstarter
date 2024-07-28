@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/toaster';
-import { useToast } from '@/components/ui/use-toast';
 
 const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { toast } = useToast();
 
     const handleMobileMenuToggle = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
     return (
-        <header className="bg-white shadow-md py-4">
+        <header className="bg-white shadow-md py-4 mt-4">
             <div className="container mx-auto px-4 flex justify-between items-center">
                 <div className="text-xl font-bold">Health Reminder App</div>
                 <nav className="hidden md:flex space-x-4">

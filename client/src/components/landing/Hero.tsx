@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { useInView } from 'react-intersection-observer';
 import Waitlist from '@/components/landing/Waitlist';
 

@@ -50,7 +50,3 @@ export const App = () => {
 
 
 export default App
-
-function gtag(arg0: string, arg1: string, arg2: { page_path: string; }) {
-  throw new Error('Function not implemented.');
-}
