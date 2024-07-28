@@ -11,7 +11,7 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-white shadow-md py-4 mt-4">
+        <header className="bg-white shadow-md py-4">
             <div className="container mx-auto px-4 flex justify-between items-center">
                 <div className="text-xl font-bold">Health Reminder App</div>
                 <nav className="hidden md:flex space-x-4">

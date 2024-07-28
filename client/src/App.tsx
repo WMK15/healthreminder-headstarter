@@ -7,13 +7,14 @@ import AuthLayout from './_auth/AuthLayout';
 import { Toaster } from "@/components/ui/toaster"
 import Landing from './landing/Landing';
 import { useEffect } from 'react';
+import PrivateRoute from './components/PrivateRoute';
 
 const useAnalytics = () => {
   const location = useLocation();
 
   useEffect(() => {
     if (typeof window.gtag === 'function') {
-      window.gtag('config', 'G-XXXXXXXXXX', {
+      window.gtag('config', import.meta.env.VITE_FIREBASE_MEASUREMENT_ID, {
         page_path: location.pathname + location.search,
       });
     } else {
@@ -27,7 +28,7 @@ export const App = () => {
   useAnalytics();
 
   return (
-    <main className='flex h-screen'>
+    <main className='flex'>
       <Routes>
         {/* Public Routes */}
         <Route element={<AuthLayout />}>
@@ -38,9 +39,9 @@ export const App = () => {
 
 
         {/* Private Routes */}
-        {/* <Route element={<RootLayout/>}>
-            
-            </Route> */}
+        {<PrivateRoute>
+          <Route path='/app' element={<div>App</div>} />
+        </PrivateRoute>}
 
       </Routes>
       <Toaster />
